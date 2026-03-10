@@ -1,0 +1,29 @@
+{
+  "name": "uttarwarart",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "npm run copy-art-assets && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "copy-art-assets": "tsx scripts/copy-art-assets.ts"
+  },
+  "dependencies": {
+    "framer-motion": "^11.11.17",
+    "next": "14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.18",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
