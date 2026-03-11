@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getManifest, getPaintingIds } from "@/lib/manifest";
-import { computeExactLayout } from "@/lib/symmetry-layout";
+import { getManifest, getPaintingIds, getEdgeCorrectedPlacements } from "@/lib/manifest";
+import { computeEdgeCorrectedLayout } from "@/lib/symmetry-layout";
 import { PaintingAssembly } from "@/components/PaintingAssembly";
 
 interface PageProps {
@@ -21,7 +21,8 @@ export default async function ArtPage({ params }: PageProps) {
   } catch {
     notFound();
   }
-  const placements = computeExactLayout(manifest);
+  const edgeCorrected = await getEdgeCorrectedPlacements(id);
+  const placements = computeEdgeCorrectedLayout(manifest, edgeCorrected);
   const sectionFilenames: Record<number, string> = {};
   for (const s of manifest.sections) {
     sectionFilenames[s.index] = s.filename;
@@ -32,6 +33,10 @@ export default async function ArtPage({ params }: PageProps) {
       <nav className="mb-6 flex items-center gap-4 text-sm text-zinc-400">
         <Link href="/" className="hover:text-white">
           ← Gallery
+        </Link>
+        <span className="text-zinc-600">|</span>
+        <Link href="/warp-logic" className="hover:text-white">
+          Warp logic
         </Link>
       </nav>
       <div className="w-full">

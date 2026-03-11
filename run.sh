@@ -36,6 +36,22 @@ fi
 echo "Copying art assets..."
 npm run copy-art-assets
 
+# --- Edge-align pipeline (optional; requires Python 3 and pip deps) ---
+if command -v python3 >/dev/null 2>&1; then
+  if ! python3 -c "import cv2, numpy, scipy" 2>/dev/null; then
+    echo "Installing edge-align Python dependencies..."
+    if command -v pip3 >/dev/null 2>&1; then
+      pip3 install -q -r scripts/edge_align_sections/requirements.txt
+    else
+      python3 -m pip install -q -r scripts/edge_align_sections/requirements.txt
+    fi
+  fi
+  echo "Running edge-align (align → verify → fallback)..."
+  npm run edge-align && npm run edge-align:verify && npm run edge-align:fallback
+else
+  echo "Skipping edge-align (python3 not found)."
+fi
+
 # --- Run ---
 MODE="${1:-dev}"
 if [ "$MODE" = "start" ]; then

@@ -61,3 +61,11 @@ export interface SymmetrySectionPlacement {
 }
 
 export type SymmetryLayoutResult = SymmetrySectionPlacement[];
+
+/** 2D point in source image coordinates */
+export type Point2D = [number, number];
+
+/** Saved outer boundary for final image: source_images/<id>/warp-boundary.json */
+export interface WarpBoundary {
+  boundary_corners: Point2D[];
+}

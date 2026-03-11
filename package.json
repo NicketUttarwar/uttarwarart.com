@@ -7,7 +7,10 @@
     "build": "npm run copy-art-assets && next build",
     "start": "next start",
     "lint": "next lint",
-    "copy-art-assets": "tsx scripts/copy-art-assets.ts"
+    "copy-art-assets": "tsx scripts/copy-art-assets.ts",
+    "edge-align": "tsx scripts/edge-align.ts",
+    "edge-align:verify": "tsx scripts/edge-align-verify.ts",
+    "edge-align:fallback": "tsx scripts/edge-align-fallback.ts"
   },
   "dependencies": {
     "framer-motion": "^11.11.17",

@@ -1,6 +1,6 @@
-import { getManifest, getPaintingIds } from "@/lib/manifest";
-import { computeExactLayout } from "@/lib/symmetry-layout";
-import { ScrollArtworkSection } from "@/components/ScrollArtworkSection";
+import { getManifest, getPaintingIds, getEdgeCorrectedPlacements } from "@/lib/manifest";
+import { computeEdgeCorrectedLayout } from "@/lib/symmetry-layout";
+import { GalleryWithScroll } from "@/components/GalleryWithScroll";
 
 function formatTitle(id: string): string {
   if (id.startsWith("IMG_")) return id;
@@ -18,7 +18,8 @@ export default async function HomePage() {
   const artworks = await Promise.all(
     ids.map(async (id) => {
       const manifest = await getManifest(id);
-      const placements = computeExactLayout(manifest);
+      const edgeCorrected = await getEdgeCorrectedPlacements(id);
+      const placements = computeEdgeCorrectedLayout(manifest, edgeCorrected);
       const sectionFilenames: Record<number, string> = {};
       for (const s of manifest.sections) {
         sectionFilenames[s.index] = s.filename;
@@ -30,29 +31,14 @@ export default async function HomePage() {
         placements,
         sectionFilenames,
         title: formatTitle(id),
+        manifest,
       };
     })
   );
 
   return (
     <main className="min-h-screen bg-zinc-950">
-      <header className="sticky top-0 z-10 border-b border-zinc-800/50 bg-zinc-950/90 px-4 py-4 text-center backdrop-blur-sm">
-        <h1 className="text-xl font-light tracking-wide text-white md:text-2xl">
-          Uttarwar Art
-        </h1>
-        <p className="mt-1 text-xs text-zinc-500">Scroll — sections come together</p>
-      </header>
-      {artworks.map((art) => (
-        <ScrollArtworkSection
-          key={art.id}
-          paintingId={art.id}
-          sourceWidth={art.sourceWidth}
-          sourceHeight={art.sourceHeight}
-          placements={art.placements}
-          sectionFilenames={art.sectionFilenames}
-          title={art.title}
-        />
-      ))}
+      <GalleryWithScroll artworks={artworks} />
     </main>
   );
 }

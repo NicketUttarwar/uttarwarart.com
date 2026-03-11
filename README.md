@@ -9,7 +9,7 @@ An art portfolio site built with Next.js. Each work is split into sections that 
 - **Node.js** (v18 or later) and **npm**
 - Install from [nodejs.org](https://nodejs.org) if needed.
 
-The project uses Node only (no Python). Dependencies are installed with `npm install`.
+The project uses Node for the app; the optional **edge-align pipeline** uses Python (see [docs/EDGE-ASSEMBLY-PLAN.md](docs/EDGE-ASSEMBLY-PLAN.md)). Dependencies: `npm install` for the app; `pip install -r scripts/edge_align_sections/requirements.txt` for edge-align.
 
 ---
 
@@ -86,6 +86,9 @@ You can run the app directly with npm:
 | `npm run build` | Copy assets and build for production. |
 | `npm run start` | Serve production build (run after `npm run build`). |
 | `npm run lint` | Run ESLint. |
+| `npm run edge-align` | Run edge-align pipeline (writes `edge-corrected-placements.json` per painting). |
+| `npm run edge-align:verify` | Verify placements and write `edge-align-report.json` (only for paintings that have placements). |
+| `npm run edge-align:fallback` | Remove placements when report confidence is low (only for paintings that have a report). |
 
 For a production-like run without `run.sh`:
 
@@ -110,6 +113,7 @@ PORT=3000 npm run start
 | `lib/symmetry-layout.ts` | Symmetry adjustment for section placement (no UI). |
 | `lib/types.ts` | Shared TypeScript types. |
 | `scripts/copy-art-assets.ts` | Copies `source_images` → `public/art`. |
+| `docs/EDGE-ASSEMBLY-PLAN.md` | **Full plan** for edge-matching assembly: algorithm, edge cases, verification, fallback, modular scripts. |
 
 ---
 

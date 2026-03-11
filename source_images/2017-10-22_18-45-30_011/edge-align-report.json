@@ -1,0 +1,22 @@
+{
+  "confidence": "high",
+  "seams": [
+    {
+      "section_a": 0,
+      "section_b": 1,
+      "edge_a": "bottom",
+      "edge_b": "top",
+      "score": 0.7765,
+      "pass": true
+    },
+    {
+      "section_a": 1,
+      "section_b": 0,
+      "edge_a": "top",
+      "edge_b": "bottom",
+      "score": 0.7765,
+      "pass": true
+    }
+  ],
+  "timestamp": "2026-03-11T23:18:43.100941+00:00"
+}
