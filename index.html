@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uttarwar Art — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;500&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #0a0a0b;
+      color: #e8e6e3;
+      overflow-x: hidden;
+    }
+    #canvas-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+    #canvas-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #scroll-spacer {
+      height: 300vh;
+      pointer-events: none;
+      position: relative;
+      z-index: 1;
+    }
+    .title-overlay {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 2;
+      padding: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 5vw, 3rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(10,10,11,0.85) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .title-overlay h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .title-overlay .hint {
+      font-size: 0.75rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      opacity: 0.7;
+    }
+    .progress-dots {
+      position: fixed;
+      right: clamp(1rem, 3vw, 2rem);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      pointer-events: none;
+    }
+    .progress-dots {
+      transition: opacity 0.4s ease;
+    }
+    .progress-dots .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .progress-dots .dot.active {
+      background: rgba(255,255,255,0.95);
+      transform: scale(1.4);
+    }
+    .piece-label {
+      position: fixed;
+      bottom: clamp(1rem, 3vw, 2rem);
+      left: clamp(1.5rem, 5vw, 3rem);
+      z-index: 2;
+      transition: opacity 0.4s ease;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: #0a0a0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      transition: opacity 0.5s ease;
+    }
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading .text { font-size: 0.85rem; letter-spacing: 0.15em; opacity: 0.8; }
+
+    /* About section: intro (50vh) + 3 culture blocks (100vh each) = 350vh */
+    #about {
+      min-height: 350vh;
+      position: relative;
+      z-index: 1;
+    }
+    #about .about-intro {
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+    }
+    #about .about-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      letter-spacing: 0.06em;
+      color: #e8e6e3;
+      margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    }
+    #about .about-text {
+      font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(232, 230, 227, 0.9);
+      max-width: 48ch;
+    }
+    #about .culture-block {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(2rem, 5vw, 4rem);
+      padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 5vw, 3rem);
+    }
+    #about .culture-block:nth-child(2) { flex-direction: row; }
+    #about .culture-block:nth-child(3) { flex-direction: row-reverse; }
+    #about .culture-block:nth-child(4) { flex-direction: row; }
+    #about .culture-image-wrap {
+      flex-shrink: 0;
+      will-change: transform;
+    }
+    #about .culture-image-wrap img {
+      width: clamp(180px, 28vw, 320px);
+      height: clamp(180px, 28vw, 320px);
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: block;
+    }
+    #about .culture-text {
+      max-width: 42ch;
+    }
+    #about .culture-text h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+      color: #e8e6e3;
+    }
+    #about .culture-text p {
+      font-size: clamp(0.85rem, 1.2vw, 1rem);
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(232, 230, 227, 0.88);
+    }
+    #about .culture-text .home-note {
+      font-size: clamp(0.75rem, 1vw, 0.85rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    <span class="text">Loading portfolio</span>
+  </div>
+
+  <section id="about" aria-label="About the artist">
+    <div class="about-intro">
+      <h2 class="about-heading">Nicket Uttarwar</h2>
+      <p class="about-text">
+        Nicket grew up across many cultures and weaves those influences into the work—street and ceremony, tradition and experiment, place and memory. These places were all once home. Silicon Valley is the current home.
+      </p>
+    </div>
+    <div class="culture-block" data-culture="0">
+      <div class="culture-image-wrap" id="about-img-mumbai" data-fly="left">
+        <img src="data/static/vada-pav.jpg" alt="Vada pav, Mumbai street food" width="320" height="320" />
+      </div>
+      <div class="culture-text">
+        <p class="home-note">Mumbai · once home</p>
+        <h3>Mumbai</h3>
+        <p>Food—vada pav at a roadside stall—culture and language here shaped how Nicket sees rhythm and plurality. Art became the ultimate form of expression across those worlds.</p>
+      </div>
+    </div>
+    <div class="culture-block" data-culture="1">
+      <div class="culture-image-wrap" id="about-img-london" data-fly="right">
+        <img src="data/static/high-tea.jpg" alt="High tea, London" width="320" height="320" />
+      </div>
+      <div class="culture-text">
+        <p class="home-note">London · once home</p>
+        <h3>London</h3>
+        <p>High tea and layered histories, ritual and restraint—the food, culture and language of London left a deep mark. For Nicket, art is the ultimate form of expression beyond any single tongue or place.</p>
+      </div>
+    </div>
+    <div class="culture-block" data-culture="2">
+      <div class="culture-image-wrap" id="about-img-sf" data-fly="left">
+        <img src="data/static/sourdough.jpg" alt="Sourdough bread, San Francisco" width="320" height="320" />
+      </div>
+      <div class="culture-text">
+        <p class="home-note">Silicon Valley · current home</p>
+        <h3>Silicon Valley</h3>
+        <p>Sourdough and long bets, craft and startup spirit—the food, culture and language of the Bay shaped Nicket here and now. Art remains the ultimate form of expression.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="canvas-wrap"></div>
+  <div class="title-overlay">
+    <h1>Uttarwar Art</h1>
+    <span class="hint">Scroll</span>
+  </div>
+  <div class="progress-dots" id="progress-dots" aria-hidden="true"></div>
+  <div class="piece-label" id="piece-label"></div>
+  <div id="scroll-spacer"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://esm.sh/three@0.160.0"
+      }
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
