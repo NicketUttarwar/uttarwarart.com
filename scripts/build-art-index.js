@@ -20,15 +20,23 @@ const dirs = fs.readdirSync(OUTPUT_DEFAULTS, { withFileTypes: true })
   .filter(d => d.isDirectory())
   .map(d => d.name);
 
+// Iconic foods (UK, India, SF) assigned to each artwork in order
+const ARTWORK_FOODS = [
+  'Gulab jamun', 'Jalebi', 'Pani puri', 'Masala chai', 'High tea',
+  'CTM', 'Full English', 'Bread pudding', 'Clam chowder', 'Irish coffee',
+];
+
 const index = [];
 for (const folder of dirs) {
   const manifestPath = path.join(OUTPUT_DEFAULTS, folder, 'manifest.json');
   if (!fs.existsSync(manifestPath)) continue;
   try {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const food = ARTWORK_FOODS[index.length] || '';
     index.push({
       folder,
       source_filename: manifest.source_filename || folder,
+      ...(food && { food }),
       composite_width_px: manifest.composite_width_px,
       composite_height_px: manifest.composite_height_px,
       sections: (manifest.sections || []).map(s => ({

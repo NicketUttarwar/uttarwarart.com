@@ -65,11 +65,6 @@
       opacity: 0.7;
     }
     .progress-dots {
-      position: fixed;
-      right: clamp(1rem, 3vw, 2rem);
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -89,18 +84,72 @@
       background: rgba(255,255,255,0.95);
       transform: scale(1.4);
     }
-    .piece-label {
+    /* ——— Right-side scroll section: progress bar + artwork navigation ——— */
+    .scroll-progress-wrap {
+      position: fixed;
+      right: clamp(1rem, 3vw, 2rem);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: none;
+      padding: 1rem 0.75rem;
+      background: rgba(10, 10, 11, 0.6);
+      border: 1px solid rgba(232, 230, 227, 0.15);
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+    .scroll-progress-wrap .scroll-section-label {
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(232, 230, 227, 0.45);
+      margin-bottom: 0.25rem;
+    }
+    .scroll-progress-wrap .scroll-section-dots {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .scroll-progress-wrap .scroll-progress-about,
+    .scroll-progress-wrap .scroll-progress-artworks {
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+    .scroll-progress-wrap .progress-dots {
+      margin-top: 0;
+    }
+    /* Current artwork label (updates when scrolling through artworks) */
+    .piece-label-wrap {
       position: fixed;
       bottom: clamp(1rem, 3vw, 2rem);
       left: clamp(1.5rem, 5vw, 3rem);
       z-index: 2;
+      pointer-events: none;
+    }
+    .piece-label-wrap .piece-label-doc {
+      font-size: 0.55rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(232, 230, 227, 0.5);
+      margin-bottom: 0.2rem;
+    }
+    .piece-label {
       transition: opacity 0.4s ease;
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(0.9rem, 1.5vw, 1.1rem);
       font-weight: 400;
       letter-spacing: 0.08em;
       opacity: 0.85;
-      pointer-events: none;
     }
     #loading {
       position: fixed;
@@ -129,11 +178,87 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     #loading .text { font-size: 0.85rem; letter-spacing: 0.15em; opacity: 0.8; }
 
+    /* ——— Culinary carousel: edge-to-edge, continuous scroll ——— */
+    #culinary-carousel {
+      position: relative;
+      z-index: 1;
+      padding-top: clamp(4.5rem, 14vh, 7rem);
+      padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+      padding-left: 0;
+      padding-right: 0;
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      background: linear-gradient(to bottom, rgba(10,10,11,0.4) 0%, rgba(10,10,11,0.75) 100%);
+      border-bottom: 1px solid rgba(232, 230, 227, 0.1);
+      overflow: hidden;
+    }
+    #culinary-carousel .carousel-inner {
+      width: 100%;
+      max-width: none;
+      overflow: hidden;
+    }
+    #culinary-carousel .carousel-track {
+      display: flex;
+      width: 200%;
+      animation: culinary-scroll 60s linear infinite;
+    }
+    @keyframes culinary-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    #culinary-carousel .carousel-slide {
+      flex: 0 0 8.333%;
+      position: relative;
+      height: 100px;
+    }
+    #culinary-carousel .carousel-slide .slide-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    #culinary-carousel .carousel-slide .slide-icon svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    #culinary-carousel .carousel-slide .slide-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(232, 230, 227, 0.9);
+    }
+
     /* About section: intro (50vh) + 3 culture blocks (100vh each) = 350vh */
+    /* ——— Above section: About (intro + culture blocks) ——— */
     #about {
       min-height: 350vh;
       position: relative;
       z-index: 1;
+      border-bottom: 1px solid rgba(232, 230, 227, 0.12);
+    }
+    #about .section-badge {
+      position: sticky;
+      top: clamp(4rem, 12vh, 6rem);
+      left: clamp(1.5rem, 5vw, 3rem);
+      z-index: 2;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(232, 230, 227, 0.5);
+      margin-bottom: -2rem;
+      pointer-events: none;
     }
     #about .about-intro {
       min-height: 50vh;
@@ -166,6 +291,22 @@
       justify-content: center;
       gap: clamp(2rem, 5vw, 4rem);
       padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 5vw, 3rem);
+      position: relative;
+      overflow: hidden;
+    }
+    #about .culture-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      opacity: 0.14;
+      z-index: 0;
+    }
+    #about .culture-block > * {
+      position: relative;
+      z-index: 1;
     }
     #about .culture-block:nth-child(2) { flex-direction: row; }
     #about .culture-block:nth-child(3) { flex-direction: row-reverse; }
@@ -214,41 +355,146 @@
     <span class="text">Loading portfolio</span>
   </div>
 
-  <section id="about" aria-label="About the artist">
+  <section id="culinary-carousel" aria-label="Culinary journey: kitchen tools">
+    <div class="carousel-inner">
+      <div class="carousel-track" id="carousel-track">
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v48M28 12h8M26 20h12M24 28h16M22 36h20M24 44h16"/><ellipse cx="32" cy="54" rx="6" ry="2"/></svg></div>
+          <span class="slide-caption">Whisk</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="44" width="24" height="4" rx="1"/><path d="M32 44V28M28 28h8"/><path d="M32 28l-4-8h8l-4 8"/><circle cx="32" cy="16" r="4"/><path d="M20 20h24M18 24h28"/><ellipse cx="32" cy="22" rx="8" ry="3"/></svg></div>
+          <span class="slide-caption">Weight scale</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="12" width="28" height="36" rx="2"/><path d="M32 12v-4M28 8h8"/><path d="M24 52h16M28 56h8"/><circle cx="32" cy="28" r="4"/></svg></div>
+          <span class="slide-caption">Blender</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20v24M44 20v24M20 32c0 6 5 10 12 10s12-4 12-10M32 42v6M28 48h8"/></svg></div>
+          <span class="slide-caption">Tongs</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18h28l-4 28H22L18 18z"/><path d="M22 18V14a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v4"/></svg></div>
+          <span class="slide-caption">Spatula</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="12"/><path d="M32 20v24M26 26h12M26 32h12M26 38h12"/><path d="M20 32c0-2 1-4 2-5M44 32c0 2-1 4-2 5"/></svg></div>
+          <span class="slide-caption">Kitchen scissors</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8l4 44H28L32 8z"/><path d="M20 52h24M28 20l-8 32M36 20l8 32"/></svg></div>
+          <span class="slide-caption">Knife</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 14c-4 0-8 4-8 10v24h24V24c0-6-4-10-8-10M32 48v4M28 52h8"/><path d="M36 20l-4 20M32 24l-4 16"/></svg></div>
+          <span class="slide-caption">Ladle & wooden spoon</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 16h6l18 36H24L24 16z"/><path d="M30 16V12a3 3 0 0 1 6 0v4"/><path d="M26 24h14M24 32h18"/></svg></div>
+          <span class="slide-caption">Peeler</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="14" width="28" height="36" rx="1"/><path d="M22 22h4M22 28h4M22 34h4M22 40h4M34 22h4M34 28h4M34 34h4M34 40h4M26 22h4M26 28h4M26 34h4M26 40h4"/></svg></div>
+          <span class="slide-caption">Grater</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="32" rx="20" ry="8"/><path d="M12 32h40"/><path d="M20 24v16M44 24v16"/></svg></div>
+          <span class="slide-caption">Rolling pin</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20h20l-2 32H24L22 20z"/><path d="M26 28h12M26 34h12M26 40h12"/><path d="M28 16V12M36 16V12"/></svg></div>
+          <span class="slide-caption">Measuring cups</span>
+        </div>
+        <!-- Duplicated set for seamless infinite scroll -->
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v48M28 12h8M26 20h12M24 28h16M22 36h20M24 44h16"/><ellipse cx="32" cy="54" rx="6" ry="2"/></svg></div>
+          <span class="slide-caption">Whisk</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="44" width="24" height="4" rx="1"/><path d="M32 44V28M28 28h8"/><path d="M32 28l-4-8h8l-4 8"/><circle cx="32" cy="16" r="4"/><path d="M20 20h24M18 24h28"/><ellipse cx="32" cy="22" rx="8" ry="3"/></svg></div>
+          <span class="slide-caption">Weight scale</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="12" width="28" height="36" rx="2"/><path d="M32 12v-4M28 8h8"/><path d="M24 52h16M28 56h8"/><circle cx="32" cy="28" r="4"/></svg></div>
+          <span class="slide-caption">Blender</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20v24M44 20v24M20 32c0 6 5 10 12 10s12-4 12-10M32 42v6M28 48h8"/></svg></div>
+          <span class="slide-caption">Tongs</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18h28l-4 28H22L18 18z"/><path d="M22 18V14a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v4"/></svg></div>
+          <span class="slide-caption">Spatula</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="12"/><path d="M32 20v24M26 26h12M26 32h12M26 38h12"/><path d="M20 32c0-2 1-4 2-5M44 32c0 2-1 4-2 5"/></svg></div>
+          <span class="slide-caption">Kitchen scissors</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8l4 44H28L32 8z"/><path d="M20 52h24M28 20l-8 32M36 20l8 32"/></svg></div>
+          <span class="slide-caption">Knife</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 14c-4 0-8 4-8 10v24h24V24c0-6-4-10-8-10M32 48v4M28 52h8"/><path d="M36 20l-4 20M32 24l-4 16"/></svg></div>
+          <span class="slide-caption">Ladle & wooden spoon</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 16h6l18 36H24L24 16z"/><path d="M30 16V12a3 3 0 0 1 6 0v4"/><path d="M26 24h14M24 32h18"/></svg></div>
+          <span class="slide-caption">Peeler</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="14" width="28" height="36" rx="1"/><path d="M22 22h4M22 28h4M22 34h4M22 40h4M34 22h4M34 28h4M34 34h4M34 40h4M26 22h4M26 28h4M26 34h4M26 40h4"/></svg></div>
+          <span class="slide-caption">Grater</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="32" rx="20" ry="8"/><path d="M12 32h40"/><path d="M20 24v16M44 24v16"/></svg></div>
+          <span class="slide-caption">Rolling pin</span>
+        </div>
+        <div class="carousel-slide">
+          <div class="slide-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="rgba(232,230,227,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 20h20l-2 32H24L22 20z"/><path d="M26 28h12M26 34h12M26 40h12"/><path d="M28 16V12M36 16V12"/></svg></div>
+          <span class="slide-caption">Measuring cups</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" aria-label="Culinary journey and the artist">
+    <p class="section-badge" aria-hidden="true">Above: Culinary journey</p>
     <div class="about-intro">
-      <h2 class="about-heading">Nicket Uttarwar</h2>
+      <h2 class="about-heading">Taste, flavor, perception</h2>
       <p class="about-text">
-        Nicket grew up across many cultures and weaves those influences into the work—street and ceremony, tradition and experiment, place and memory. These places were all once home. Silicon Valley is the current home.
+        The culinary journey above and the artwork below are one practice. Nicket’s life is grounded in food, ritual, and a holistic way of being—taste and flavor, street and ceremony, tradition and experiment, all felt through the senses and through spirit. That same attention—how we perceive place, memory, and the body—flows into the art and design you see here. Mumbai and London were once home; Silicon Valley is home now. This site is the bridge between that inner life and the work it makes visible.
       </p>
     </div>
-    <div class="culture-block" data-culture="0">
+    <div class="culture-block culture-block-mumbai" data-culture="0" style="--bg-image: url('data/static/vada-pav.jpg');">
       <div class="culture-image-wrap" id="about-img-mumbai" data-fly="left">
-        <img src="data/static/vada-pav.jpg" alt="Vada pav, Mumbai street food" width="320" height="320" />
+        <img src="data/static/vada-pav.jpg" alt="Vada pav — Mumbai street food" width="320" height="320" />
       </div>
       <div class="culture-text">
         <p class="home-note">Mumbai · once home</p>
         <h3>Mumbai</h3>
-        <p>Food—vada pav at a roadside stall—culture and language here shaped how Nicket sees rhythm and plurality. Art became the ultimate form of expression across those worlds.</p>
+        <p>Learning to eat with your hands—thali, shared plates, the feel of roti and rice. Touch is as much a part of taste as flavor; eating is ritual and connection. That way of perceiving food and place carries into the art.</p>
       </div>
     </div>
-    <div class="culture-block" data-culture="1">
+    <div class="culture-block culture-block-london" data-culture="1" style="--bg-image: url('data/static/beef-wellington.jpg');">
       <div class="culture-image-wrap" id="about-img-london" data-fly="right">
-        <img src="data/static/high-tea.jpg" alt="High tea, London" width="320" height="320" />
+        <img src="data/static/beef-wellington.jpg" alt="Beef Wellington — London" width="320" height="320" />
       </div>
       <div class="culture-text">
         <p class="home-note">London · once home</p>
         <h3>London</h3>
-        <p>High tea and layered histories, ritual and restraint—the food, culture and language of London left a deep mark. For Nicket, art is the ultimate form of expression beyond any single tongue or place.</p>
+        <p>Eating with a fork and knife. At my London school, we learned to put even a pea on a plate and eat with a knife and fork—and to eat a burger with a knife. Ritual, restraint, and the perception of order shaped how food and place are felt.</p>
       </div>
     </div>
-    <div class="culture-block" data-culture="2">
+    <div class="culture-block culture-block-sf" data-culture="2" style="--bg-image: url('data/static/sourdough.jpg');">
       <div class="culture-image-wrap" id="about-img-sf" data-fly="left">
-        <img src="data/static/sourdough.jpg" alt="Sourdough bread, San Francisco" width="320" height="320" />
+        <img src="data/static/sourdough.jpg" alt="Sourdough bread — San Francisco" width="320" height="320" />
       </div>
       <div class="culture-text">
         <p class="home-note">Silicon Valley · current home</p>
-        <h3>Silicon Valley</h3>
-        <p>Sourdough and long bets, craft and startup spirit—the food, culture and language of the Bay shaped Nicket here and now. Art remains the ultimate form of expression.</p>
+        <h3>San Francisco</h3>
+        <p>This is where I learned about molecular gastronomy, farm-to-table cooking, pâtissiers, sommeliers, and other culinary styles. Some of my favorite tasting-menu restaurants are here. My wife and I enjoy eating at these places—taste and art remain ultimate forms of expression.</p>
       </div>
     </div>
   </section>
@@ -258,8 +504,21 @@
     <h1>Uttarwar Art</h1>
     <span class="hint">Scroll</span>
   </div>
-  <div class="progress-dots" id="progress-dots" aria-hidden="true"></div>
-  <div class="piece-label" id="piece-label"></div>
+  <div class="scroll-progress-wrap" aria-label="Scroll position: About and Artworks">
+    <span class="scroll-section-label">Scroll</span>
+    <div class="scroll-section-dots">
+      <span class="scroll-progress-about">About</span>
+      <div class="progress-dots progress-dots-about" id="progress-dots-about" aria-hidden="true"></div>
+    </div>
+    <div class="scroll-section-dots">
+      <span class="scroll-progress-artworks">Artworks</span>
+      <div class="progress-dots progress-dots-artworks" id="progress-dots-artworks" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="piece-label-wrap">
+    <p class="piece-label-doc">Current artwork</p>
+    <div class="piece-label" id="piece-label"></div>
+  </div>
   <div id="scroll-spacer"></div>
 
   <script type="importmap">

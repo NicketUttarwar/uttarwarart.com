@@ -61,8 +61,14 @@ function computeStaggerForPiece(sections) {
   };
 }
 
+/** Culinary carousel: continuous scroll is CSS-driven (no dots, no JS). */
+function initCarousel() {
+  /* Carousel uses CSS animation for infinite scroll; no JS needed. */
+}
+
 /** Build scene and scroll-driven animation */
 async function init() {
+  initCarousel();
   const indexRes = await fetch(DATA_URL);
   if (!indexRes.ok) throw new Error('Failed to load art index');
   const artIndex = await indexRes.json();
@@ -161,20 +167,39 @@ async function init() {
       group,
       sectionData,
       sourceFilename: piece.source_filename,
+      food: piece.food || '',
     });
   }
 
-  // Progress dots
-  const dotsEl = document.getElementById('progress-dots');
+  // Progress dots: three About (Mumbai, London, SF) under ABOUT, one per artwork under ARTWORKS
+  const dotsAboutEl = document.getElementById('progress-dots-about');
+  const dotsArtworksEl = document.getElementById('progress-dots-artworks');
   const labelEl = document.getElementById('piece-label');
-  artIndex.forEach((_, i) => {
+  const aboutLabels = ['Mumbai', 'London', 'San Francisco'];
+  aboutLabels.forEach((label, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot dot-about';
+    dot.setAttribute('data-section', 'about');
+    dot.setAttribute('data-culture', i);
+    dot.setAttribute('title', label);
+    dotsAboutEl.appendChild(dot);
+  });
+  artIndex.forEach((piece, i) => {
     const dot = document.createElement('div');
     dot.className = 'dot';
     dot.setAttribute('data-index', i);
-    dotsEl.appendChild(dot);
+    dot.setAttribute('title', piece.food || '');
+    dotsArtworksEl.appendChild(dot);
   });
 
   const aboutHeight = () => ABOUT_VIEWPORTS * window.innerHeight;
+
+  function getTotalScrollHeight() {
+    const screenH = window.innerHeight;
+    const aboutPx = ABOUT_VIEWPORTS * screenH;
+    const artworkPx = artIndex.length * SCREENS_PER_PIECE * screenH;
+    return aboutPx + artworkPx;
+  }
 
   function getScrollState() {
     const scrollY = window.scrollY;
@@ -200,7 +225,8 @@ async function init() {
       tPhase = (t - FLY_IN_RATIO - HOLD_RATIO) / FLY_OUT_RATIO;
     }
 
-    return { pieceIndex, phase, tPhase: easeInOutCubic(tPhase), screenH, segment, scrollY, aboutHeightPx: aboutHeight() };
+    const totalHeight = getTotalScrollHeight();
+    return { pieceIndex, phase, tPhase: easeInOutCubic(tPhase), screenH, segment, scrollY, aboutHeightPx: aboutHeight(), totalHeight };
   }
 
   function updateAboutSection(state) {
@@ -260,23 +286,48 @@ async function init() {
       }
     });
 
-    labelEl.textContent = current.sourceFilename.replace(/_/g, ' ');
-    document.querySelectorAll('.progress-dots .dot').forEach((el, i) => {
+    const filenameStr = current.sourceFilename.replace(/_/g, ' ');
+    labelEl.textContent = current.food ? `${filenameStr} — ${current.food}` : filenameStr;
+    document.querySelectorAll('.progress-dots-artworks .dot').forEach((el, i) => {
       el.classList.toggle('active', i === pieceIndex);
     });
   }
 
+  /** Which culture block (0=Mumbai, 1=London, 2=SF) is in view; -1 during intro */
+  function getAboutCultureIndex(state) {
+    const { scrollY, screenH } = state;
+    const scrollVp = scrollY / screenH;
+    if (scrollVp < 0.5) return -1;
+    if (scrollVp < 1.5) return 0;
+    if (scrollVp < 2.5) return 1;
+    if (scrollVp < 3.5) return 2;
+    return -1;
+  }
+
   function updateUIForSection(state) {
     const inAbout = state.pieceIndex < 0;
-    const progressDots = document.getElementById('progress-dots');
+    const aboutCulture = getAboutCultureIndex(state);
+    const dotsAboutEl = document.getElementById('progress-dots-about');
+    const dotsArtworksEl = document.getElementById('progress-dots-artworks');
     const pieceLabel = document.getElementById('piece-label');
-    if (progressDots) {
-      progressDots.style.opacity = inAbout ? '0' : '1';
-      if (inAbout) progressDots.querySelectorAll('.dot').forEach(el => el.classList.remove('active'));
+    if (dotsAboutEl) {
+      dotsAboutEl.style.opacity = '1';
+      dotsAboutEl.querySelectorAll('.dot').forEach((el) => {
+        const cultureIndex = parseInt(el.getAttribute('data-culture'), 10);
+        el.classList.toggle('active', inAbout && cultureIndex === aboutCulture);
+      });
+    }
+    if (dotsArtworksEl) {
+      dotsArtworksEl.style.opacity = '1';
+      dotsArtworksEl.querySelectorAll('.dot').forEach((el, i) => {
+        el.classList.toggle('active', !inAbout && i === state.pieceIndex);
+      });
     }
     if (pieceLabel) {
-      pieceLabel.style.opacity = inAbout ? '0' : '0.85';
-      if (inAbout) pieceLabel.textContent = '';
+      pieceLabel.style.opacity = '0.85';
+      const docLabel = document.querySelector('.piece-label-doc');
+      if (docLabel) docLabel.textContent = inAbout ? 'Section' : 'Current artwork';
+      if (inAbout) pieceLabel.textContent = aboutCulture >= 0 ? aboutLabels[aboutCulture] : 'About';
     }
   }
 
